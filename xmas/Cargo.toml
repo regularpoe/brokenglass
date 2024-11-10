@@ -1,0 +1,15 @@
+[package]
+name = "xmas"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+notify-rust = "4.11.3"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 'z'
+panic = 'abort'
+
