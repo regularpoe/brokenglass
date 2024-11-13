@@ -1,0 +1,19 @@
+{
+    "ruby": {
+        "read_file": "def read(filename); end",
+        "write_file": "def write(filename, content); end",
+        "append_file": "def append(filename, content); end",
+        "read_file_with": "def read_file_with; end"
+    },
+    "rust": {
+        "read_file": "fn read_file(filename: &str) -> Result<String, std::io::Error> { }",
+        "write_file": "fn write_file(filename: &str, content: &str) -> Result<(), std::io::Error> { }",
+        "create_file": "fn create_file(filename: &str) -> Result<File, std::io::Error> { }"
+    },
+    "python": {
+        "read_file": "def read_file(filename):",
+        "write_file": "def write_file(filename, content):",
+        "delete_file": "def delete_file(filename):"
+    }
+}
+
