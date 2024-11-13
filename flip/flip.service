@@ -1,0 +1,15 @@
+[Unit]
+Description=Clipboard Encoder Service
+After=network.target
+
+[Service]
+ExecStart=/home/vedran/bin/flip
+Restart=always
+RestartSec=5
+User=vedran
+Environment=DISPLAY=:0
+WorkingDirectory=/home/vedran/bin
+
+[Install]
+WantedBy=multi-user.target
+

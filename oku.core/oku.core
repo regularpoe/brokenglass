@@ -1,0 +1,85 @@
+#!/bin/bash
+
+check_jq_installed() {
+    if ! command -v jq &> /dev/null; then
+        echo "jq is not installed. Attempting to install jq..."
+        if command -v apt &> /dev/null; then
+            sudo apt update && sudo apt install -y jq
+        elif command -v yum &> /dev/null; then
+            sudo yum install -y jq
+        elif command -v dnf &> /dev/null; then
+            sudo dnf install -y jq
+        elif command -v pacman &> /dev/null; then
+            sudo pacman -S --noconfirm jq
+        else
+            echo "Could not detect package manager. Please install jq manually."
+            exit 1
+        fi
+        if ! command -v jq &> /dev/null; then
+            echo "jq installation failed. Please install it manually."
+            exit 1
+        fi
+    fi
+}
+
+show_usage() {
+    echo "Usage: oku.core <line_number> <json_file> <language> <snippet_name> <target_file>"
+    echo "Example: oku.core 10 data.json ruby read_file myfile.rb"
+    exit 1
+}
+
+if [ $# -ne 5 ]; then
+    show_usage
+fi
+
+line_number=$1
+json_file=$2
+language=$3
+snippet_name=$4
+target_file=$5
+
+check_jq_installed
+
+if [[ ! -f "$json_file" ]]; then
+    echo "Error: JSON file '$json_file' not found"
+    exit 1
+fi
+
+if [[ ! -f "$target_file" ]]; then
+    echo "Error: Target file '$target_file' not found"
+    exit 1
+fi
+
+snippet=$(jq -r --arg lang "$language" --arg name "$snippet_name" '.[$lang][$name]' "$json_file")
+
+if [[ $snippet == "null" ]]; then
+    echo "Error: Snippet '$snippet_name' for language '$language' not found!"
+    echo "Available snippets for $language:"
+    jq -r --arg lang "$language" '.[$lang] | keys[]' "$json_file" 2>/dev/null | sed 's/^/- /'
+    exit 1
+fi
+
+if [[ $snippet =~ ^[A-Za-z0-9+/]*={0,2}$ ]]; then
+    decoded_snippet=$(echo "$snippet" | base64 -d 2>/dev/null)
+    if [ $? -eq 0 ]; then
+        snippet="$decoded_snippet"
+    fi
+fi
+
+cp "$target_file" "${target_file}.bak"
+
+if ! sed -i "${line_number}i\\${snippet}" "$target_file" 2>/dev/null; then
+    echo "Error: Failed to insert snippet. Restoring backup..."
+    mv "${target_file}.bak" "$target_file"
+    exit 1
+fi
+
+rm "${target_file}.bak"
+
+echo "Snippet successfully inserted at line $line_number in $target_file!"
+
+echo -e "\nInserted content:"
+echo "----------------"
+echo "$snippet"
+echo "----------------"
+

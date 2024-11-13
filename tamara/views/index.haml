@@ -1,0 +1,34 @@
+.row
+  %ul
+    %li
+      %button{:onclick => "previous()"}
+        %i.fas.fa-fast-backward
+    %li
+      %button{:onclick => "play()"}
+        %i.fas.fa-play
+    %li
+      %button{:onclick => "pause()"}
+        %i.fas.fa-pause
+    %li
+      %button{:onclick => "stop()"}
+        %i.fas.fa-stop
+    %li
+      %button{:onclick => "nxt()"}
+        %i.fas.fa-fast-forward
+.row.tc
+  .status
+    %ul
+      %li
+        %i.fas.fa-music
+      %li
+        %h3#artist
+      %li
+        %h3#title
+      %li
+        %h3#album
+.row
+  .u-pull-right
+    %button{:onclick => "getlyrics()"}
+      %i.fas.fa-sync
+.row.tc
+  %p#lyrics

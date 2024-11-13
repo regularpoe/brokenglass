@@ -1,0 +1,93 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}/
+    %title tAMARA
+    %meta{:content => "width=device-width, initial-scale=1", :name => "viewport"}/
+    %link{:href => "//fonts.googleapis.com/css?family=Raleway:400,300,600", :rel => "stylesheet", :type => "text/css"}/
+    %link{:href => "normalize.css", :rel => "stylesheet"}/
+    %link{:href => "skeleton.css", :rel => "stylesheet"}/
+    %link{:href => "style.css", :rel => "stylesheet"}/
+    %script{:crossorigin => "anonymous", :src => "https://kit.fontawesome.com/dcb687a8eb.js"}
+    %script{:src => "http://tracking.musixmatch.com/t1.0/AMa6hJCIEzn1v8RuOP", :type => "text/javascript"}
+  %body
+    .container
+      .row
+        %h1
+          tAMARA
+          %i.fas.fa-glasses
+      .row
+        .content
+          =yield
+    :javascript
+      function play() {
+        const opts = {
+          method: 'POST'
+        };
+        fetch('/play', opts).then(res => console.info(res));
+        status();
+      }
+
+      function pause() {
+        const opts = {
+          method: 'POST'
+        };
+        fetch('/pause', opts).then(res => console.info(res));
+        status();
+      }
+
+      function previous() {
+        const opts = {
+          method: 'POST'
+        };
+        fetch('/prev', opts).then(res => console.info(res));
+        status();
+      }
+
+      function nxt() {
+        const opts = {
+          method: 'POST'
+        };
+        fetch('/next', opts).then(res => console.info(res));
+        status();
+      }
+
+      function stop() {
+        const opts = {
+          method: 'POST'
+        };
+        fetch('/stop', opts)
+          .then(res => console.info(res));
+
+        document.getElementById("artist").innerText = '';
+        document.getElementById("album").innerText = '';
+        document.getElementById("title").innerText = '';
+      }
+
+      async function status() {
+        const opts = { method: 'GET' };
+        const response = await fetch('/status', opts);
+        const data = await response.json();
+        document.getElementById("artist").innerText = data.artist;
+        document.getElementById("album").innerText = data.album;
+        document.getElementById("title").innerText = data.track;
+      }
+      
+      async function getlyrics() {
+        const opts = { method: 'GET' };
+        const artist = document.getElementById("artist").innerText;
+        const track = document.getElementById("title").innerText;
+        const url = `https://api.musixmatch.com/ws/1.1/track.search?format=jsonp&callback=parseTrackId&q_track=${encodeURIComponent(track)}&q_artist=${encodeURIComponent(artist)}&quorum_factor=1&apikey=671a28f8ef70406b3186884497d7a4c0`
+        const response = await fetch(url, opts);
+        const data = await response.json();
+        parseTrackId(data);
+      }
+
+      async function parseTrackId(data) {
+        const opts = { method: 'GET' };
+        const trackId = data;
+        const url = `https://api.musixmatch.com/ws/1.1/track.lyrics.get?format=jsonp&callback=callback&track_id=${trackId}&apikey=671a28f8ef70406b3186884497d7a4c0`;
+        const response = await fetch(url, opts);
+        const body = await response.json();
+        document.getElementById("lyrics").innerText = body;
+      }

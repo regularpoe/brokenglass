@@ -1,0 +1,37 @@
+.container {
+    margin-top: 100px;
+}
+
+.status {
+    border-top: 1px dashed #000;
+    padding-top: 10px;
+}
+
+.tc { text-align: center; }
+
+#artist {
+    color: #a7abd6;
+    margin-left: 50px;
+}
+
+#title {
+    color: #616598;
+    margin-left: 20px;
+}
+
+#album {
+    color: #2d2f85;
+    margin-left: 20px;
+}
+
+#lyrics {
+    color: #222;
+}
+
+ul {
+    list-style: none;
+}
+
+ul li {
+    display: inline-block;
+}
