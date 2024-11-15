@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-	// Define flags
 	key := flag.String("k", "", "Key to store in YAML")
 	value := flag.String("v", "", "Value to store in YAML")
 	encode := flag.Bool("e", false, "Base64 encode the value")
@@ -19,10 +18,8 @@ func main() {
 	printKeyValue := flag.Bool("r", false, "Print key:value to stdout")
 	file := flag.String("file", "output.yaml", "YAML file to write to")
 
-	// Parse flags
 	flag.Parse()
 
-	// Validate input
 	if *key == "" && !*decode && !*printKeyValue {
 		fmt.Println("Error: -k flag is required unless using -d or -r")
 		flag.Usage()
@@ -35,7 +32,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Handle -d flag
 	if *decode {
 		decodedValue, err := base64Decode(*value)
 		if err != nil {
@@ -46,19 +42,16 @@ func main() {
 		return
 	}
 
-	// Handle -r flag
 	if *printKeyValue {
 		fmt.Printf("%s:%s\n", *key, *value)
 		return
 	}
 
-	// Handle -e flag
 	finalValue := *value
 	if *encode {
 		finalValue = base64Encode(*value)
 	}
 
-	// Write to YAML file
 	if err := writeToYAML(*file, *key, finalValue); err != nil {
 		fmt.Printf("Error writing to YAML: %v\n", err)
 		os.Exit(1)
@@ -67,12 +60,10 @@ func main() {
 	fmt.Printf("Successfully wrote %s:%s to %s\n", *key, finalValue, *file)
 }
 
-// Base64 encode function
 func base64Encode(value string) string {
 	return base64.StdEncoding.EncodeToString([]byte(value))
 }
 
-// Base64 decode function
 func base64Decode(encoded string) (string, error) {
 	decoded, err := base64.StdEncoding.DecodeString(encoded)
 	if err != nil {
@@ -81,9 +72,7 @@ func base64Decode(encoded string) (string, error) {
 	return string(decoded), nil
 }
 
-// Write key-value pair to YAML file
 func writeToYAML(filename, key, value string) error {
-	// Read existing data if file exists
 	data := make(map[string]string)
 	if _, err := os.Stat(filename); err == nil {
 		file, err := os.Open(filename)
@@ -97,10 +86,8 @@ func writeToYAML(filename, key, value string) error {
 		}
 	}
 
-	// Add or update key-value pair
 	data[key] = value
 
-	// Write data back to file
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
